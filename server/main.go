@@ -13,11 +13,10 @@ import (
 	"strings"
 	"sync"
 
-	pb "f/proto"
+	pb "github.com/sjuhan/face_server/proto"
 
 	"github.com/Kagami/go-face"
 	"google.golang.org/grpc"
-	
 )
 
 const (

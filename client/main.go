@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	pb "f/proto"
+	pb "github.com/sjuhan/face_server/proto"
 
 	"google.golang.org/grpc"
 )
