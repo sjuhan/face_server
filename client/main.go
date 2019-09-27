@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	pb "github.com/sjuhan/face_server/proto"
@@ -21,8 +20,10 @@ const (
 
 func main() {
 	now := time.Now()
-	var wg sync.WaitGroup
-	var wg1 sync.WaitGroup
+
+	done := make(chan bool, 5)
+	done1 := make(chan bool, 5)
+
 	var res []float32
 	var ress [][]float32
 
@@ -64,12 +65,13 @@ func main() {
 		ress = append(ress, res)
 		res = nil
 	}
-	wg.Add(len(ress))
+
 	for i, res := range ress {
 		name := strconv.Itoa(i)
 		jumin := strconv.Itoa(i)
 		//rname, rjumin := save(c, res, name, jumin)
-		go save(c, res, name, jumin, &wg)
+		go save(c, res, name, jumin, done)
+		<-done
 		//go recg(c, res)
 		//log.Printf("\n이름:%v \n주민:%v", name, jumin)
 	}
@@ -85,21 +87,20 @@ func main() {
 		ress = append(ress, res)
 		res = nil
 	}
-	wg1.Add(len(ress))
+
 	for _, res := range ress {
 		//name := strconv.Itoa(i)
 		//jumin := strconv.Itoa(i)
 		//rname, rjumin := save(c, res, name, jumin)
 		//go save(c, res, name, jumin)
-		go recg(c, res, &wg1)
+		go recg(c, res, done1)
+		<-done1
 	}
-	wg.Wait()
-	wg1.Wait()
 
 	log.Println("끝", time.Since(now))
 }
 
-func save(c pb.RecClient, res []float32, name string, jumin string, wg *sync.WaitGroup) {
+func save(c pb.RecClient, res []float32, name string, jumin string, ch chan bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	//rr, err := c.Recog(ctx, &pb.Face{Face: res, Name: name, Jumin: jumin})
@@ -108,10 +109,10 @@ func save(c pb.RecClient, res []float32, name string, jumin string, wg *sync.Wai
 		log.Fatalf("could not greet: %v", err)
 	} */
 	//log.Printf("%v,%v", rr.Jumin, rr.Name)
-	defer wg.Done()
+	ch <- true
 }
 
-func recg(c pb.RecClient, res []float32, wg *sync.WaitGroup) {
+func recg(c pb.RecClient, res []float32, ch chan bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	rr, err := c.Recog(ctx, &pb.Face{Face: res})
@@ -123,5 +124,5 @@ func recg(c pb.RecClient, res []float32, wg *sync.WaitGroup) {
 	} else {
 		log.Printf("%v,%v", rr.Jumin, rr.Name)
 	}
-	defer wg.Done()
+	ch <- true
 }
