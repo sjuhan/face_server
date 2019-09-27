@@ -22,6 +22,7 @@ import (
 // <https://github.com/Kagami/go-face-testdata> clone.
 const dataDir = "testdata"
 
+var Face face.Descriptor
 var samples []face.Descriptor
 var cats []int32
 

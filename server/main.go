@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 
+	f "github.com/sjuhan/face_server/face"
 	pb "github.com/sjuhan/face_server/proto"
 
 	"github.com/Kagami/go-face"
@@ -50,7 +51,6 @@ type server struct{}
 func (s *server) Recog(ctx context.Context, in *pb.Face) (*pb.Res, error) {
 	var ff [128]float32
 	var res *pb.Res
-	var vv []vvv
 	if len(in.Jumin) > 0 { //주민번호가 있을때-얼굴 저장
 		for i, f := range in.Face {
 			ff[i] = f
@@ -66,7 +66,7 @@ func (s *server) Recog(ctx context.Context, in *pb.Face) (*pb.Res, error) {
 		for i, f := range in.Face {
 			ff[i] = f
 		}
-		n := 얼굴비교(samples, face.Descriptor(ff), 0.6, vv)
+		n := f.Compare(samples, face.Descriptor(ff), 0.6)
 		if n == -1 {
 			res = &pb.Res{Jumin: "없는얼굴", Name: "없는얼굴"}
 			//log.Printf("Received: %v", in.Face)
@@ -80,6 +80,8 @@ func (s *server) Recog(ctx context.Context, in *pb.Face) (*pb.Res, error) {
 	//fmt.Println(len(samples))
 	return res, nil
 }
+
+
 func 얼굴저장(face face.Descriptor) {
 	file, err := os.OpenFile("face.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {

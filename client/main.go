@@ -55,9 +55,9 @@ func main() {
 		address = os.Args[1]
 	}
 
-	s1 := rand.NewSource(1)
+	s1 := rand.NewSource(time.Now().UnixNano())
 	r1 := rand.New(s1)
-	for j := 0; j < 50000; j++ {
+	for j := 0; j < 10; j++ {
 		for i := 0; i < 128; i++ {
 			res = append(res, r1.Float32())
 		}
@@ -73,13 +73,14 @@ func main() {
 		//go recg(c, res)
 		//log.Printf("\n이름:%v \n주민:%v", name, jumin)
 	}
-	wg.Wait()
 	ress = nil
 	s1 = rand.NewSource(1)
 	r1 = rand.New(s1)
-	for j := 0; j < 500; j++ {
+	s1 = rand.NewSource(time.Now().UnixNano())
+	r2 := rand.New(s1)
+	for j := 0; j < 500000; j++ {
 		for i := 0; i < 128; i++ {
-			res = append(res, r1.Float32())
+			res = append(res, (r1.Float32() + r2.Float32()/float32(r2.Intn(1000))))
 		}
 		ress = append(ress, res)
 		res = nil
@@ -92,6 +93,7 @@ func main() {
 		//go save(c, res, name, jumin)
 		go recg(c, res, &wg1)
 	}
+	wg.Wait()
 	wg1.Wait()
 
 	log.Println("끝", time.Since(now))
@@ -116,10 +118,10 @@ func recg(c pb.RecClient, res []float32, wg *sync.WaitGroup) {
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	if rr.Jumin != "없는얼굴" {
-		log.Printf("%v,%v", rr.Jumin, rr.Name)
-	} else {
+	if rr.Jumin == "없는얼굴" {
 		log.Printf("없음")
+	} else {
+		log.Printf("%v,%v", rr.Jumin, rr.Name)
 	}
 	defer wg.Done()
 }
