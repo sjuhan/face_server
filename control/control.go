@@ -175,17 +175,11 @@ func CreateJobObject(attr *syscall.SecurityAttributes, name string) (syscall.Han
 //GetText 오토핫키의 ControlGetText 구현
 func GetText(win string, control string) string {
 	숫자 := regexp.MustCompile("[0-9]+$")
-	문자 := regexp.MustCompile("[a-zA-Z]+[0-9]?[a-zA-Z]+")
 	n := 숫자.FindAllString(control, -1)
-	c := 문자.FindAllString(control, -1)
+	control = control[0 : len(control)-len(n[0])]
 	h, _, _ := FindWindow(win)
 	rn, _ := strconv.Atoi(n[0])
-	hh, _, _ := FindChildWindow(h, c[0], rn)
+	hh, _, _ := FindChildWindow(h, control, rn)
 
 	return wmGetText(hh)
-}
-
-func main() {
-	fmt.Println(GetText("종합검진", "ThunderRT6TextBox34"))
-	fmt.Println(GetText("종합검진", "ThunderRT6TextBox33"))
 }
