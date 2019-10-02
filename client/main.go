@@ -58,7 +58,7 @@ func main() {
 
 	s1 := rand.NewSource(time.Now().UnixNano())
 	r1 := rand.New(s1)
-	for j := 0; j < 10; j++ {
+	for j := 0; j < 5000; j++ {
 		for i := 0; i < 128; i++ {
 			res = append(res, r1.Float32())
 		}
