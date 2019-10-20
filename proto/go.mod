@@ -1,8 +1,3 @@
-module f/proto
+module github.com/sjuhan/face_server/proto
 
-go 1.12
-
-require (
-	github.com/golang/protobuf v1.3.2
-	google.golang.org/grpc v1.23.0
-)
+go 1.13

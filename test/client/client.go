@@ -59,7 +59,7 @@ func (s *facestruct) runRouteChat(client pb.RecClient) {
 }
 
 func main() {
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	conn, err := grpc.Dial("juhan.tk:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("fail to dial: %v", err)
 	}
