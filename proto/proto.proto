@@ -6,13 +6,15 @@ package proto;
 service Rec {
   // Sends a greeting
   rpc Recog (Face) returns (Res) {}
+  rpc Test (stream Face) returns (stream Face) {}
 }
 
 // The request message containing the user's name.
 message Face {
-  repeated float face = 1;  
+  repeated float descriptor = 1;  
   string jumin = 2;
   string name = 3;
+  int32 index =4;
 }
 
 // The response message containing the greetings
