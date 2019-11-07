@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"math"
 	"net"
@@ -25,11 +26,9 @@ const (
 )
 
 var (
-	m       = new(sync.Mutex)
-	samples []face.Descriptor
-	jumins  []string
-	names   []string
-	cats    []int32
+	m    = new(sync.Mutex)
+	cats []int32
+	c    = make(chan chan string, 1)
 )
 
 type vvv struct {
@@ -45,7 +44,30 @@ func (a ByV) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByV) Less(i, j int) bool { return a[i].v < a[j].v }
 
 // server is used to implement helloworld.GreeterServer.
-type server struct{}
+type server struct {
+	facestruct
+	f *pb.Face
+}
+
+type facestruct struct {
+	samples []face.Descriptor
+	jumins  []string
+	names   []string
+}
+
+func (s *server) Test(stream pb.Rec_TestServer) error {
+	for {
+		in, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		log.Println(in.GetReqa())
+	}
+
+}
 
 // SayHello implements helloworld.GreeterServer
 func (s *server) Recog(ctx context.Context, in *pb.Face) (*pb.Res, error) {
@@ -56,9 +78,10 @@ func (s *server) Recog(ctx context.Context, in *pb.Face) (*pb.Res, error) {
 			ff[i] = f
 		}
 		m.Lock()
-		samples = append(samples, face.Descriptor(ff)) //전송받은 얼굴특징값을 face.Descriptor로 변환하여 samples에 넣기
-		jumins = append(jumins, in.Jumin)
-		names = append(names, in.Name)
+
+		s.samples = append(s.samples, face.Descriptor(ff)) //전송받은 얼굴특징값을 face.Descriptor로 변환하여 samples에 넣기
+		s.jumins = append(s.jumins, in.Jumin)
+		s.names = append(s.names, in.Name)
 		m.Unlock()
 		res = &pb.Res{Jumin: "", Name: ""}
 
@@ -66,12 +89,12 @@ func (s *server) Recog(ctx context.Context, in *pb.Face) (*pb.Res, error) {
 		for i, f := range in.Face {
 			ff[i] = f
 		}
-		n := f.Compare(samples, face.Descriptor(ff), 0.6)
+		n := f.Compare(s.samples, face.Descriptor(ff), 0.6)
 		if n == -1 {
 			res = &pb.Res{Jumin: "없는얼굴", Name: "없는얼굴"}
 			//log.Printf("Received: %v", in.Face)
 		} else {
-			res = &pb.Res{Jumin: jumins[n], Name: names[n]}
+			res = &pb.Res{Jumin: s.jumins[n], Name: s.names[n]}
 			//log.Printf("Received: %v", in.Face)
 			//log.Printf("Received name:%v,jumin:%v,r:%v", res.Name, res.Jumin, n)
 			//log.Printf("보낸주민:%v|보낸이름:%v\n", res.Jumin, res.Name)
@@ -81,14 +104,13 @@ func (s *server) Recog(ctx context.Context, in *pb.Face) (*pb.Res, error) {
 	return res, nil
 }
 
-
-func 얼굴저장(face face.Descriptor) {
+func (s *server) 얼굴저장(face face.Descriptor) {
 	file, err := os.OpenFile("face.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Println(err)
 	}
 
-	samples = append(samples, face)
+	s.samples = append(s.samples, face)
 	for _, d := range face {
 		s := fmt.Sprintf("%0.9f", d) + "|"
 		//fmt.Println(s)
@@ -102,7 +124,7 @@ func 얼굴저장(face face.Descriptor) {
 	file.Close()
 }
 
-func 얼굴열기() {
+func (s *server) 얼굴열기() {
 	var ff [128]float32
 	var no int
 	//var faced []face.Descriptor
@@ -132,7 +154,7 @@ func 얼굴열기() {
 			ff[i] = float32(r)
 		}
 
-		samples = append(samples, face.Descriptor(ff))
+		s.samples = append(s.samples, face.Descriptor(ff))
 		no++
 	}
 	file.Close()
@@ -188,6 +210,7 @@ func EuclideanNorm(f face.Descriptor) float32 {
 }
 
 func main() {
+
 	fmt.Println("시작")
 	lis, err := net.Listen("tcp", port)
 	if err != nil {

@@ -5,7 +5,8 @@ package proto;
 // The greeting service definition.
 service Rec {
   // Sends a greeting
-  rpc Recog (Face) returns (Res) {}
+  rpc Recog(Face) returns (Res) {}
+  rpc Test(stream Request) returns (stream Response) {}
 }
 
 // The request message containing the user's name.
@@ -19,4 +20,11 @@ message Face {
 message Res {
   string jumin = 1;
   string name = 2;
+}
+
+message Request {
+  string reqa = 1;
+}
+message Response {
+  string resb = 1;
 }

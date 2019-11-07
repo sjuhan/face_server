@@ -128,24 +128,108 @@ func (m *Res) GetName() string {
 	return ""
 }
 
+type Request struct {
+	Reqa                 string   `protobuf:"bytes,1,opt,name=reqa,proto3" json:"reqa,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Request) Reset()         { *m = Request{} }
+func (m *Request) String() string { return proto.CompactTextString(m) }
+func (*Request) ProtoMessage()    {}
+func (*Request) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2fcc84b9998d60d8, []int{2}
+}
+
+func (m *Request) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Request.Unmarshal(m, b)
+}
+func (m *Request) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Request.Marshal(b, m, deterministic)
+}
+func (m *Request) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Request.Merge(m, src)
+}
+func (m *Request) XXX_Size() int {
+	return xxx_messageInfo_Request.Size(m)
+}
+func (m *Request) XXX_DiscardUnknown() {
+	xxx_messageInfo_Request.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Request proto.InternalMessageInfo
+
+func (m *Request) GetReqa() string {
+	if m != nil {
+		return m.Reqa
+	}
+	return ""
+}
+
+type Response struct {
+	Resb                 string   `protobuf:"bytes,1,opt,name=resb,proto3" json:"resb,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Response) Reset()         { *m = Response{} }
+func (m *Response) String() string { return proto.CompactTextString(m) }
+func (*Response) ProtoMessage()    {}
+func (*Response) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2fcc84b9998d60d8, []int{3}
+}
+
+func (m *Response) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Response.Unmarshal(m, b)
+}
+func (m *Response) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Response.Marshal(b, m, deterministic)
+}
+func (m *Response) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Response.Merge(m, src)
+}
+func (m *Response) XXX_Size() int {
+	return xxx_messageInfo_Response.Size(m)
+}
+func (m *Response) XXX_DiscardUnknown() {
+	xxx_messageInfo_Response.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Response proto.InternalMessageInfo
+
+func (m *Response) GetResb() string {
+	if m != nil {
+		return m.Resb
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*Face)(nil), "proto.Face")
 	proto.RegisterType((*Res)(nil), "proto.Res")
+	proto.RegisterType((*Request)(nil), "proto.Request")
+	proto.RegisterType((*Response)(nil), "proto.Response")
 }
 
 func init() { proto.RegisterFile("proto.proto", fileDescriptor_2fcc84b9998d60d8) }
 
 var fileDescriptor_2fcc84b9998d60d8 = []byte{
-	// 142 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x2e, 0x28, 0xca, 0x2f,
-	0xc9, 0xd7, 0x03, 0x93, 0x42, 0xac, 0x60, 0x4a, 0xc9, 0x85, 0x8b, 0xc5, 0x2d, 0x31, 0x39, 0x55,
-	0x48, 0x88, 0x8b, 0x25, 0x2d, 0x31, 0x39, 0x55, 0x82, 0x51, 0x81, 0x59, 0x83, 0x29, 0x08, 0xcc,
-	0x16, 0x12, 0xe1, 0x62, 0xcd, 0x2a, 0xcd, 0xcd, 0xcc, 0x93, 0x60, 0x52, 0x60, 0xd4, 0xe0, 0x0c,
-	0x82, 0x70, 0x40, 0x2a, 0xf3, 0x12, 0x73, 0x53, 0x25, 0x98, 0xc1, 0x82, 0x60, 0xb6, 0x92, 0x3e,
-	0x17, 0x73, 0x50, 0x6a, 0x31, 0x42, 0x03, 0x23, 0x36, 0x0d, 0x4c, 0x08, 0x0d, 0x46, 0x9a, 0x20,
-	0x0d, 0xc9, 0x42, 0x4a, 0x5c, 0xac, 0x41, 0xa9, 0xc9, 0xf9, 0xe9, 0x42, 0xdc, 0x10, 0x57, 0xe9,
-	0x81, 0xdc, 0x22, 0xc5, 0x05, 0xe5, 0x04, 0xa5, 0x16, 0x2b, 0x31, 0x24, 0xb1, 0x81, 0x39, 0xc6,
-	0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0x9f, 0xb0, 0x13, 0xbe, 0x00, 0x00, 0x00,
+	// 203 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x8f, 0xcd, 0xea, 0xc2, 0x30,
+	0x10, 0xc4, 0x9b, 0x7e, 0xfc, 0x3f, 0xb6, 0xa0, 0x10, 0x3c, 0x94, 0x82, 0x52, 0x72, 0xea, 0xc5,
+	0x2a, 0xfa, 0x0a, 0xe2, 0x03, 0x04, 0x0f, 0x5e, 0xd3, 0xb0, 0x8a, 0x42, 0x9b, 0xb6, 0x69, 0xdf,
+	0x5f, 0xb2, 0x2d, 0xd6, 0x83, 0x97, 0x64, 0x76, 0x66, 0x87, 0x1f, 0x0b, 0x71, 0xd3, 0x99, 0xde,
+	0x14, 0xf4, 0xf2, 0x88, 0x3e, 0x71, 0x82, 0xf0, 0xac, 0x34, 0x72, 0x0e, 0xe1, 0x4d, 0x69, 0x4c,
+	0x58, 0x16, 0xe4, 0xbe, 0x24, 0xcd, 0x57, 0x10, 0x3d, 0x87, 0xea, 0x51, 0x27, 0x7e, 0xc6, 0xf2,
+	0x7f, 0x39, 0x0e, 0x6e, 0xb3, 0x56, 0x15, 0x26, 0x01, 0x99, 0xa4, 0xc5, 0x0e, 0x02, 0x89, 0x76,
+	0x2e, 0xb0, 0x6f, 0x05, 0xff, 0xa3, 0xb0, 0x86, 0x5f, 0x89, 0xed, 0x80, 0xb6, 0x77, 0x71, 0x87,
+	0xad, 0x9a, 0x3a, 0xa4, 0xc5, 0x06, 0xfe, 0x24, 0xda, 0xc6, 0xd4, 0x16, 0xc7, 0xdc, 0x96, 0x73,
+	0x6e, 0xcb, 0xc3, 0xd5, 0xf1, 0x34, 0x17, 0x10, 0x49, 0xd4, 0xe6, 0xce, 0xe3, 0xf1, 0xa8, 0xc2,
+	0x9d, 0x92, 0xc2, 0x34, 0x48, 0xb4, 0xc2, 0xe3, 0x5b, 0x08, 0x2f, 0x0e, 0xb3, 0x78, 0xbb, 0x84,
+	0x4d, 0x97, 0xf3, 0x16, 0x71, 0x84, 0x97, 0xb3, 0x3d, 0x2b, 0x7f, 0xc8, 0x3d, 0xbe, 0x02, 0x00,
+	0x00, 0xff, 0xff, 0x9c, 0x55, 0xbe, 0x81, 0x2c, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -162,6 +246,7 @@ const _ = grpc.SupportPackageIsVersion4
 type RecClient interface {
 	// Sends a greeting
 	Recog(ctx context.Context, in *Face, opts ...grpc.CallOption) (*Res, error)
+	Test(ctx context.Context, opts ...grpc.CallOption) (Rec_TestClient, error)
 }
 
 type recClient struct {
@@ -181,10 +266,42 @@ func (c *recClient) Recog(ctx context.Context, in *Face, opts ...grpc.CallOption
 	return out, nil
 }
 
+func (c *recClient) Test(ctx context.Context, opts ...grpc.CallOption) (Rec_TestClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Rec_serviceDesc.Streams[0], "/proto.Rec/Test", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &recTestClient{stream}
+	return x, nil
+}
+
+type Rec_TestClient interface {
+	Send(*Request) error
+	Recv() (*Response, error)
+	grpc.ClientStream
+}
+
+type recTestClient struct {
+	grpc.ClientStream
+}
+
+func (x *recTestClient) Send(m *Request) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *recTestClient) Recv() (*Response, error) {
+	m := new(Response)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // RecServer is the server API for Rec service.
 type RecServer interface {
 	// Sends a greeting
 	Recog(context.Context, *Face) (*Res, error)
+	Test(Rec_TestServer) error
 }
 
 // UnimplementedRecServer can be embedded to have forward compatible implementations.
@@ -193,6 +310,9 @@ type UnimplementedRecServer struct {
 
 func (*UnimplementedRecServer) Recog(ctx context.Context, req *Face) (*Res, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Recog not implemented")
+}
+func (*UnimplementedRecServer) Test(srv Rec_TestServer) error {
+	return status.Errorf(codes.Unimplemented, "method Test not implemented")
 }
 
 func RegisterRecServer(s *grpc.Server, srv RecServer) {
@@ -217,6 +337,32 @@ func _Rec_Recog_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Rec_Test_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(RecServer).Test(&recTestServer{stream})
+}
+
+type Rec_TestServer interface {
+	Send(*Response) error
+	Recv() (*Request, error)
+	grpc.ServerStream
+}
+
+type recTestServer struct {
+	grpc.ServerStream
+}
+
+func (x *recTestServer) Send(m *Response) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *recTestServer) Recv() (*Request, error) {
+	m := new(Request)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 var _Rec_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.Rec",
 	HandlerType: (*RecServer)(nil),
@@ -226,6 +372,13 @@ var _Rec_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Rec_Recog_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Test",
+			Handler:       _Rec_Test_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "proto.proto",
 }
