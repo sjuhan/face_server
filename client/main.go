@@ -81,7 +81,7 @@ func save(c pb.RecClient, res []float32, name string, jumin string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	//rr, err := c.Recog(ctx, &pb.Face{Face: res, Name: name, Jumin: jumin})
-	c.Recog(ctx, &pb.Face{Face: res, Name: name, Jumin: jumin})
+	c.Recog(ctx, &pb.Face{Descriptor_: res, Name: name, Jumin: jumin})
 
 	/* if err != nil {
 		log.Fatalf("could not greet: %v", err)
@@ -110,7 +110,7 @@ func recg(wg *sync.WaitGroup, ch chan []float32) {
 		if !ok {
 			return
 		}
-		rr, err := c.Recog(ctx, &pb.Face{Face: res})
+		rr, err := c.Recog(ctx, &pb.Face{Descriptor_: res})
 		if err != nil {
 			//log.Fatalf("could not greet: %v", err)
 			log.Printf("could not greet: %v", err)
@@ -142,7 +142,7 @@ func realrecg(res []float32) {
 	c := pb.NewRecClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	rr, err := c.Recog(ctx, &pb.Face{Face: res})
+	rr, err := c.Recog(ctx, &pb.Face{Descriptor_: res})
 	if err != nil {
 		//log.Fatalf("could not greet: %v", err)
 		log.Printf("could not greet: %v", err)
@@ -217,12 +217,15 @@ func recgtest(c pb.RecClient, k int) {
 		go recg(&wg, q)
 	}
 
-	for _, res := range ress {
+	for i, res := range ress {
 		//name := strconv.Itoa(i)
 		//jumin := strconv.Itoa(i)
 		//rname, rjumin := save(c, res, name, jumin)
 		//go save(c, res, name, jumin)
 		q <- res
+		if i%150 == 0 {
+			time.Sleep(100 * time.Millisecond)
+		}
 	}
 	close(q)
 	wg.Wait() // 모든 goroutine 이 종료 될 때까지 기다린다
