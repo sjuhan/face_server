@@ -4,12 +4,10 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"math"
 	"net"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -22,71 +20,63 @@ import (
 )
 
 const (
-	port = ":50051"
+	port    = ":50051"
+	dataDir = "./data"
 )
 
 var (
-	m    = new(sync.Mutex)
-	cats []int32
-	c    = make(chan chan string, 1)
+	c = make(chan chan string, 1)
 )
-
-type vvv struct {
-	v float32
-	r int
-}
-
-//ByV 설명
-type ByV []vvv
-
-func (a ByV) Len() int           { return len(a) }
-func (a ByV) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByV) Less(i, j int) bool { return a[i].v < a[j].v }
 
 // server is used to implement helloworld.GreeterServer.
 type server struct {
-	facestruct
+	*facestruct
 	f *pb.Face
+
+	rec *face.Recognizer
+	m   *sync.Mutex
 }
 
 type facestruct struct {
 	samples []face.Descriptor
 	jumins  []string
 	names   []string
+	cats    []int32
 }
 
-func (s *server) Test(stream pb.Rec_TestServer) error {
-	for {
-		in, err := stream.Recv()
-		if err == io.EOF {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		log.Println(in.GetReqa())
+func newserverstruct() *server {
+	var err error
+	server := new(server)
+	server.facestruct = new(facestruct)
+	server.rec, err = face.NewRecognizer(dataDir)
+	if err != nil {
+		log.Println("rec만들기 에러", err)
 	}
 
+	server.m = new(sync.Mutex)
+
+	return server
 }
 
 // SayHello implements helloworld.GreeterServer
 func (s *server) Recog(ctx context.Context, in *pb.Face) (*pb.Res, error) {
 	var ff [128]float32
 	var res *pb.Res
+
 	if len(in.Jumin) > 0 { //주민번호가 있을때-얼굴 저장
-		for i, f := range in.Face {
+		for i, f := range in.Descriptor_ {
 			ff[i] = f
 		}
-		m.Lock()
+		s.m.Lock()
 
 		s.samples = append(s.samples, face.Descriptor(ff)) //전송받은 얼굴특징값을 face.Descriptor로 변환하여 samples에 넣기
 		s.jumins = append(s.jumins, in.Jumin)
 		s.names = append(s.names, in.Name)
-		m.Unlock()
+		s.m.Unlock()
 		res = &pb.Res{Jumin: "", Name: ""}
 
 	} else { //주민번호 없을때-얼굴 구분
-		for i, f := range in.Face {
+		for i, f := range in.Descriptor_ {
 			ff[i] = f
 		}
 		n := f.Compare(s.samples, face.Descriptor(ff), 0.6)
@@ -101,6 +91,7 @@ func (s *server) Recog(ctx context.Context, in *pb.Face) (*pb.Res, error) {
 		}
 	}
 	//fmt.Println(len(samples))
+
 	return res, nil
 }
 
@@ -161,7 +152,7 @@ func (s *server) 얼굴열기() {
 	log.Println(no, "개 읽음")
 }
 
-func 얼굴비교(samples []face.Descriptor, comp face.Descriptor, tolerance float32, vv []vvv) int {
+func 얼굴비교(samples []face.Descriptor, comp face.Descriptor, tolerance float32) int {
 	res := FaceDistance(samples, comp)
 	r := -1
 	v := float32(1)
@@ -171,17 +162,19 @@ func 얼굴비교(samples []face.Descriptor, comp face.Descriptor, tolerance flo
 			//log.Println(t, "\n", s)
 		}
 		if t < tolerance && t < v {
-			vv = append(vv, vvv{v: t, r: i})
+			//vv = append(vv, vvv{v: t, r: i})
 			//v = t
-			//r = i
+			r = i
 		}
 	}
-	if len(vv) != 0 {
-		sort.Sort(ByV(vv))
-		r = vv[0].r
-		//t := vv[0].v
-		//fmt.Printf("%v|%v|r값:%v|t값:%v\n", time.Now(), len(vv), r, t)
-	}
+	/*
+		if len(vv) != 0 {
+			sort.Sort(ByV(vv))
+			r = vv[0].r
+			//t := vv[0].v
+			//fmt.Printf("%v|%v|r값:%v|t값:%v\n", time.Now(), len(vv), r, t)
+		}
+	*/
 	//r값은 얼굴특징값의 몇번째인지 반환.0부터 시작
 	return r
 }
@@ -210,14 +203,16 @@ func EuclideanNorm(f face.Descriptor) float32 {
 }
 
 func main() {
-
 	fmt.Println("시작")
+
+	server := newserverstruct()
+
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterRecServer(s, &server{})
+	pb.RegisterRecServer(s, server)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

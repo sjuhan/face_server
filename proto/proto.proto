@@ -6,7 +6,6 @@ package proto;
 service Rec {
   // Sends a greeting
   rpc Recog(Face) returns (Res) {}
-  rpc Test(stream Request) returns (stream Response) {}
 }
 
 // The request message containing the user's name.

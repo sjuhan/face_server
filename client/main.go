@@ -27,7 +27,6 @@ func main() {
 	now := time.Now()
 	defer df(now)
 
-	var s string
 	ip := flag.String("ip", "127.0.0.1", "서버ip를 입력하세요")
 	port := flag.String("port", "50051", "연결할 포트를 입력하세요")
 	lensave := flag.Int("save", 1000, "저장테스트에 사용할 배열 갯수")
@@ -56,24 +55,34 @@ func main() {
 
 	// Contact the server and print out its response.
 	//name := defaultName
-	fmt.Print("모드를 선택하세요 (test,real)")
-	fmt.Scan(&s)
-	switch s {
-	case "test":
-		savetest(c, *lensave)
-		if *lenrecog != 0 {
-			recgtest(c, *lenrecog)
-		} else {
-			fmt.Println("무한!")
-			looprecgtest(c, 1000)
-		}
-	case "real":
-		//캠에서 얼굴 인식 부분 구현필요
+	/*
+		var s string
+			fmt.Print("모드를 선택하세요 (test,real): ")
+			fmt.Scan(&s)
+			switch s {
+			case "test":
+				savetest(c, *lensave)
+				if *lenrecog != 0 {
+					recgtest(c, *lenrecog)
+				} else {
+					fmt.Println("무한!")
+					looprecgtest(c, 1000)
+				}
+			case "real":
+				//캠에서 얼굴 인식 부분 구현필요
 
-		//구현 완료되면.. 얼굴값을 서버보내서 서버에서 연산후
-		//있는 얼굴이면 index와 이름 등을 보냄
-		//없는 얼굴이면 이름을 입력받음
+				//구현 완료되면.. 얼굴값을 서버보내서 서버에서 연산후
+				//있는 얼굴이면 index와 이름 등을 보냄
+				//없는 얼굴이면 이름을 입력받음
 
+			}
+	*/
+	savetest(c, *lensave)
+	if *lenrecog != 0 {
+		recgtest(c, *lenrecog)
+	} else {
+		fmt.Println("무한!")
+		looprecgtest(c, 1000)
 	}
 }
 
@@ -224,7 +233,7 @@ func recgtest(c pb.RecClient, k int) {
 		//go save(c, res, name, jumin)
 		q <- res
 		if i%150 == 0 {
-			time.Sleep(100 * time.Millisecond)
+			//time.Sleep(100 * time.Millisecond)
 		}
 	}
 	close(q)
